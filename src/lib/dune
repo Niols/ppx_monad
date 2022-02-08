@@ -1,0 +1,10 @@
+(include_subdirs unqualified)
+
+(ocamllex simpleRegexp)
+
+(library
+ (name ppx_monad)
+ (public_name ppx_monad)
+ (libraries ppxlib str)
+ (preprocess (pps ppxlib.metaquot))
+ (kind ppx_rewriter))

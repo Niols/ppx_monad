@@ -1,0 +1,8 @@
+(library
+ (name ppx_monad_std)
+ (public_name ppx_monad.std)
+ (libraries
+  ppx_monad_list
+  ppx_monad_option
+  ppx_monad_result)
+ (kind ppx_rewriter))

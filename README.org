@@ -1,0 +1,115 @@
+#+TITLE: =ppx_monad=
+
+/An OCaml Syntax Extension for all Monadic Syntaxes./
+
+** Overview
+
+=ppx_monad= aims at providing its users with a set of standard monadic syntaxes as
+well as an easy mean to define their own. Concretely, it consists in:
+
+- a library making it easy (-ier) to write syntax extensions for monads and
+- a standard library of pre-defined such extensions.
+
+One of the simplest examples is the option monad. Using =ppx_monad=, one can
+write:
+#+BEGIN_SRC ocaml
+let add_string_ints (s1 : string) (s2 : string) : string option =
+  let%option n1 = int_of_string_opt s1 in
+  let%option n2 = int_of_string_opt s2 in
+  Some (string_of_int (n1 + n2))
+#+END_SRC
+
+which is then converted to:
+#+BEGIN_SRC ocaml
+let add_string_ints (s1 : string) (s2 : string) : string option =
+  Option.bind (int_of_string_opt s1) @@ fun n1 ->
+  Option.bind (int_of_string_opt s2) @@ fun n2 ->
+  Some (string_of_int (n1 + n2))
+#+END_SRC
+
+equivalent to the following bind-free code:
+#+BEGIN_SRC ocaml
+let add_string_ints (s1 : string) (s2 : string) : string option =
+  match int_of_string_opt s1 with
+  | None -> None
+  | Some n1 ->
+    match int_of_string_opt s2 with
+    | None -> None
+    | Some n2 -> Some (string_of_int (n1 + n2))
+#+END_SRC
+
+** Installation and Usage
+
+The easiest way to install =ppx_monad= is via OPAM [WIP]:
+#+BEGIN_SRC sh
+opam install ppx_monad
+#+END_SRC
+
+Using the standard library is simply a matter of adding a preprocessing step to
+your target. With Dune, for instance, this is done by putting:
+#+BEGIN_SRC dune
+(executable
+ (name example)
+ (preprocess (pps ppx_monad.std)))
+#+END_SRC
+in the appropriate Dune file. With ocamlbuild, this goes by adding the following
+to the =_tags= file:
+#+BEGIN_SRC
+<src/*>: package(ppx_monad.std)
+#+END_SRC
+
+Defining a new monadic syntax consists in doing... [WIP]
+
+** Standard Library of Monadic Syntax Extensions
+
+*** Option
+
+*** Result
+
+*** Either
+
+*** List
+
+*** Sequence
+
+** Defining One's Own Monadic Syntax Extension
+
+** Related Works
+
+This section attempts to list all works that provide similar features as
+=ppx_monad=. We consider not mentioning such a project here a bug and welcome any
+[[https://github.com/Niols/ppx_monad/issues/new][issue]] or [[https://github.com/Niols/ppx_monad/pulls/compare][pull request]] aiming at fixing this.
+
+- [[https://ocaml.org/manual/bindingops.html][OCaml's binding operators]]:
+  - pure OCaml
+
+- [[https://github.com/zepalmer][zepalmer]]/[[https://github.com/zepalmer/ocaml-monadic][ocaml-monadic]], a /lightweight PPX extension for OCaml to support
+  natural monadic syntax/.
+  - last updated in 2021.
+
+- [[https://github.com/marigold-dev][marigold-dev]]/[[https://github.com/marigold-dev/ppx_let_binding][ppx_let_binding]], an /OCaml syntax extension for monads in the
+  style of ReasonML/.
+  - very new (to be followed),
+  - not documented yet, and
+  - not published on OPAM yet.
+
+- [[https://github.com/kandu][kandu]]/[[https://github.com/kandu/ppx_ok_monad][ppx_ok_monad]], /a ppx syntax extension for monad syntax sugar/.
+  - last updated 2 years ago.
+
+- [[https://github.com/foretspaisibles][foretspaisibles]]/[[https://github.com/foretspaisibles/ppx_monad][ppx_monad]], /a monad syntax extension for OCaml, that provides
+  two major monad syntaxes: clean but incomplete Haskell-style monad syntax and
+  verbose but complete let monad syntax/.
+  - last updated in 2017.
+
+- [[https://github.com/rizo][rizo]]/[[https://github.com/rizo/ppx_monad][ppx_monad]], a /minimalistic monad syntax for OCaml/.
+  - last updated in 2017.
+
+- [[https://github.com/danmey][danmey]]/[[https://github.com/danmey/omonad][omonad]], a /monad syntax using ppx extensions/.
+  - last updated in 2013,
+  - no documentation, and
+  - no OPAM package.
+
+- [[https://github.com/pippijn][pippijn]]/[[https://github.com/pippijn/pa_monad_custom][pa_monad_custom]]:
+  - based on Camlp4,
+  - last updated in 2013, and
+  - no OPAM package.
