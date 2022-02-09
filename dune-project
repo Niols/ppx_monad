@@ -9,6 +9,8 @@
 (maintainers "Niols <niols@niols.fr>")
 (source (github Niols/ppx_monad))
 
+(name ppx_monad)
+
 (package
  (name ppx_monad)
  (synopsis "A Syntax Extension for all Monadic Syntaxes")
