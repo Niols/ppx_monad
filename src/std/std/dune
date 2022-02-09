@@ -4,5 +4,6 @@
  (libraries
   ppx_monad_list
   ppx_monad_option
-  ppx_monad_result)
+  ppx_monad_result
+  ppx_monad_monad)
  (kind ppx_rewriter))
