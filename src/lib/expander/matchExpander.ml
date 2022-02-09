@@ -9,7 +9,7 @@ let mk_simple ~mk_bind ~loc e cases =
   mk_bind ~loc e (Exp.function_ cases)
 
 let mk_with_exception
-    ?mk_return ~mk_bind ?mk_catch
+    ?mk_return ~mk_bind ?mk_fail ?mk_catch
     ~loc e cases exception_cases
   =
   let mk_return, mk_catch =
@@ -28,10 +28,25 @@ let mk_with_exception
       [%expr fun [%p pv] ->
         [%e mk_return ~loc [%expr Ppx_monad.MatchExpander.Exception [%e v]]]]
   in
-  (* wrap all the cases so that they match on Normal or Exception *)
+  (* wrap all the cases so that they match on Normal or Exception. for
+     exceptions, we first unwrap them from the 'exception' keyword, then add a
+     catchall if needed and only then wrap them in the Ppx_monad.*.Exception. *)
   let cases =
     cases |> List.map @@ fun case ->
     { case with pc_lhs = [%pat? Ppx_monad.MatchExpander.Normal [%p case.pc_lhs]] }
+  in
+  let exception_cases =
+    List.map
+      (fun case ->
+         match case with
+         | { pc_lhs = { ppat_desc = Ppat_exception pc_lhs; _ }; _ } ->
+           { case with pc_lhs }
+         | _ -> assert false)
+      exception_cases
+  in
+  let exception_cases =
+    Helpers.add_catchall_if_needed
+      ~loc ?mk_return:mk_fail exception_cases
   in
   let exception_cases =
     exception_cases |> List.map @@ fun case ->
@@ -63,5 +78,5 @@ let mk
     mk_simple ~mk_bind ~loc e cases
   else
     mk_with_exception
-      ?mk_return ~mk_bind ?mk_catch
+      ?mk_return ~mk_bind ?mk_fail ?mk_catch
       ~loc e cases exception_cases

@@ -1,5 +1,7 @@
 open Ppxlib
 
+module MatchExpander = MatchExpander
+
 val register :
   ?mk_return:(loc:location -> expression -> expression) ->
   ?mk_bind:(loc:location -> expression -> expression -> expression) ->

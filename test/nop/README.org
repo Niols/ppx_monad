@@ -1,0 +1,9 @@
+#+TITLE: The =nop= Test
+
+The principle of this test is to write the same PPX rewriter with different
+techniques and check that the same file, rewritten with the different PPXes,
+gives codes that have the same semantics. For this example, we write various
+files which use =%nop= structures. These structures should behave just like their
+non-annotated counterparts. We then rewrite them with different “nop” PPXes that
+do not alter the semantics of the program. We check that all rewritten codes run
+in the same way.

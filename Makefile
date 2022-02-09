@@ -10,7 +10,7 @@ uninstall:
 	dune uninstall
 
 test:
-	sh test/nop/write-dune.sh > test/nop/dune
+	sh test/nop/write-dune.sh > test/nop/cases/dune
 	dune test
 
 clean:

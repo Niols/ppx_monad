@@ -6,3 +6,4 @@ tmp/
 *#
 _build
 *.opam
+/test/nop/cases/dune
