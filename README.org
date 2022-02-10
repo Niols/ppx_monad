@@ -68,13 +68,13 @@ The standard library contains the following syntax extensions:
 
 | Name/Label   | Other Labels            | Error | Since |
 |--------------+-------------------------+-------+-------|
-| =option=       | =opt=                     |   yes |       |
-| =result.ok=    | =res.ok=, =res=, =result=, =ok= |   yes |  4.08 |
-| =result.error= | =err=, =error=              |    no |  4.08 |
-| =list=         | =lst=                     |    no |       |
-| =sequence=     | =seq=                     |    no |  4.07 |
-| =either.right= | =either=, =right=           |   yes |  4.12 |
-| =either.left=  | =left=                    |    no |  4.12 |
+| =option=       | =opt=                     | yes   |       |
+| =result.ok=    | =res.ok=, =res=, =result=, =ok= | yes   |  4.08 |
+| =result.error= | =err=, =error=              | no    |  4.08 |
+| =list=         | =lst=                     | no    |       |
+| =seq=          |                         | no    |  4.07 |
+| =either.right= | =either=, =right=           | yes   |  4.12 |
+| =either.left=  | =left=                    | no    |  4.12 |
 
 The second column indicate alternative labels that one can use to trigger the
 PPX. for instance, =let%result.ok=, =let%res= and =let%ok= all trigger the same

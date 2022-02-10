@@ -1,0 +1,6 @@
+(library
+ (name ppx_monad_seq)
+ (public_name ppx_monad.seq)
+ (libraries ppx_monad)
+ (preprocess (pps ppxlib.metaquot))
+ (kind ppx_rewriter))
