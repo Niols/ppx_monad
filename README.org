@@ -277,28 +277,28 @@ This section attempts to list all works that provide similar features as
 - [[https://ocaml.org/manual/bindingops.html][OCaml's binding operators]]:
   - pure OCaml
 
-- [[https://github.com/zepalmer][zepalmer]]/[[https://github.com/zepalmer/ocaml-monadic][ocaml-monadic]], a /lightweight PPX extension for OCaml to support
-  natural monadic syntax/.
+- [[https://github.com/zepalmer][zepalmer]]/[[https://github.com/zepalmer/ocaml-monadic][ocaml-monadic]], a “lightweight PPX extension for OCaml to support
+  natural monadic syntax.”
   - last updated in 2021.
 
-- [[https://github.com/marigold-dev][marigold-dev]]/[[https://github.com/marigold-dev/ppx_let_binding][ppx_let_binding]], an /OCaml syntax extension for monads in the
-  style of ReasonML/.
+- [[https://github.com/marigold-dev][marigold-dev]]/[[https://github.com/marigold-dev/ppx_let_binding][ppx_let_binding]], an “OCaml syntax extension for monads in the
+  style of ReasonML.”
   - very new (to be followed),
   - not documented yet, and
   - not published on OPAM yet.
 
-- [[https://github.com/kandu][kandu]]/[[https://github.com/kandu/ppx_ok_monad][ppx_ok_monad]], /a ppx syntax extension for monad syntax sugar/.
+- [[https://github.com/kandu][kandu]]/[[https://github.com/kandu/ppx_ok_monad][ppx_ok_monad]], “a ppx syntax extension for monad syntax sugar.”
   - last updated 2 years ago.
 
-- [[https://github.com/foretspaisibles][foretspaisibles]]/[[https://github.com/foretspaisibles/ppx_monad][ppx_monad]], /a monad syntax extension for OCaml, that provides
+- [[https://github.com/foretspaisibles][foretspaisibles]]/[[https://github.com/foretspaisibles/ppx_monad][ppx_monad]], “a monad syntax extension for OCaml, that provides
   two major monad syntaxes: clean but incomplete Haskell-style monad syntax and
-  verbose but complete let monad syntax/.
+  verbose but complete let monad syntax.”
   - last updated in 2017.
 
-- [[https://github.com/rizo][rizo]]/[[https://github.com/rizo/ppx_monad][ppx_monad]], a /minimalistic monad syntax for OCaml/.
+- [[https://github.com/rizo][rizo]]/[[https://github.com/rizo/ppx_monad][ppx_monad]], a “minimalistic monad syntax for OCaml.”
   - last updated in 2017.
 
-- [[https://github.com/danmey][danmey]]/[[https://github.com/danmey/omonad][omonad]], a /monad syntax using ppx extensions/.
+- [[https://github.com/danmey][danmey]]/[[https://github.com/danmey/omonad][omonad]], a “monad syntax using ppx extensions.”
   - last updated in 2013,
   - no documentation, and
   - no OPAM package.
