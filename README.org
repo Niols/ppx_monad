@@ -64,6 +64,8 @@ to the =_tags= file:
 <src/*>: package(ppx_monad.std)
 #+END_SRC
 
+*** Standard Extensions
+
 The standard library contains the following syntax extensions:
 
 | Name/Label   | Other Labels            | Error | Since |
@@ -95,6 +97,37 @@ the form =Ok x=. It does not feature an error part. The same considerations hold
 for =Either= which the convention that values of the form =Right x= are the “good”
 ones, even if OCaml's standard library specifies that one should only use =Either=
 “without assigning a specific meaning to what each case should be.”
+
+*** The =monad= Extension
+
+The standard library contains one specific extension, =ppx_monad.monad=, which
+does not rely on any particular monad but uses the “current” one. For instance:
+
+#+BEGIN_SRC ocaml
+let%monad x = ...some computation... in
+...some other computation...
+#+END_SRC
+
+is rewritten into:
+
+#+BEGIN_SRC ocaml
+bind ...some computation... (fun x ->
+    ...some other computation...)
+#+END_SRC
+
+and it is up to the user to make sure that the =bind= function is in scope. This
+can be useful when manipulating modules that define a monad with the usual
+keywords. For instance:
+
+#+BEGIN_SRC ocaml
+let open Result in
+let%m x = ...some computation... in
+...some other computation...
+#+END_SRC
+
+will rely on =bind= from the =Result= monad. (Note that we used =m= as a short label
+for =monad.=) This extension will expect the functions =return=, =bind=, =fail= and
+=catch= to be defined in order to provide all the possible structures.
 
 ** Defining Custom Monadic Syntaxes
 
