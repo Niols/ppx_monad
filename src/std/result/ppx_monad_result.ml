@@ -1,26 +1,19 @@
 open Ppxlib
 
 let mk_return ~loc x =
-  [%expr Ok [%e x]]
+  [%expr Stdlib.Result.Ok [%e x]]
 
 let mk_bind ~loc e f =
-  let px, x = Ppx_monad.fresh_variable () in
-  let py, y = Ppx_monad.fresh_variable () in
-  [%expr
-    match [%e e] with
-    | Ok [%p px] -> [%e f] [%e x]
-    | Error [%p py] -> Error [%e y]]
+  [%expr Stdlib.Result.bind [%e e] [%e f]]
 
-let mk_fail ~loc x =
-  [%expr Error [%e x]]
+let mk_fail ~loc y =
+  [%expr Stdlib.Result.Error [%e y]]
 
 let mk_catch ~loc e f =
-  let px, x = Ppx_monad.fresh_variable () in
-  let py, y = Ppx_monad.fresh_variable () in
   [%expr
-    match [%e e] with
-    | Ok [%p px] -> Ok [%e x]
-    | Error [%p py] -> [%e f] [%e y]]
+    (fun e f -> match e with
+       | Stdlib.Result.Ok x -> Stdlib.Result.Ok x
+       | Stdlib.Result.Error y -> f y) [%e e] [%e f]]
 
 let () = Ppx_monad.register "result.ok"
     ~applies_on:"ok|res(ult)?(.ok)?"
