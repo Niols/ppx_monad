@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  ci:
+    strategy:
+      fail-fast: false
+      matrix:
+        ocaml-compiler:
+          - 4.04.x
+          - 4.05.x
+          - 4.06.x
+          - 4.07.x
+          - 4.08.x
+          - 4.09.x
+          - 4.10.x
+          - 4.11.x
+          - 4.12.x
+          - 4.13.x
+        os:
+          - ubuntu-latest
+        include:
+          - os: macos-latest
+            ocaml-compiler: 4.13.x
+          - os: windows-latest
+            ocaml-compiler: 4.13.x
+
+    name: ${{ matrix.ocaml-compiler }} [${{ matrix.os }}]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Use OCaml ${{ matrix.ocaml-compiler }}
+        uses: ocaml/setup-ocaml@v2
+        with:
+          ocaml-compiler: ${{ matrix.ocaml-compiler }}
+
+      - name: Install Dependencies
+        run: opam install . --deps-only --with-test
+
+      - name: Build
+        run: opam exec -- dune build @install
+
+      - name: Run Tests
+        run: opam exec -- dune test

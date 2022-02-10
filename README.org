@@ -1,6 +1,7 @@
 #+TITLE: =ppx_monad=
 
 /An OCaml Syntax Extension for all Monadic Syntaxes./
+[[https://github.com/Niols/ppx_monad/actions/workflows/ci.yml][https://github.com/Niols/ppx_monad/actions/workflows/ci.yml/badge.svg?branch=main]]
 
 ** Overview
 
