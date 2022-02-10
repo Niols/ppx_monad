@@ -39,41 +39,201 @@ let add_string_ints (s1 : string) (s2 : string) : string option =
     | Some n2 -> Some (string_of_int (n1 + n2))
 #+END_SRC
 
-** Installation and Usage
+** Installation
 
 The easiest way to install =ppx_monad= is via OPAM [WIP]:
 #+BEGIN_SRC sh
 opam install ppx_monad
 #+END_SRC
 
+** Using the Standard Library
+
 Using the standard library is simply a matter of adding a preprocessing step to
 your target. With Dune, for instance, this is done by putting:
+
 #+BEGIN_SRC dune
 (executable
  (name example)
  (preprocess (pps ppx_monad.std)))
 #+END_SRC
+
 in the appropriate Dune file. With ocamlbuild, this goes by adding the following
 to the =_tags= file:
+
 #+BEGIN_SRC
 <src/*>: package(ppx_monad.std)
 #+END_SRC
 
-Defining a new monadic syntax consists in doing... [WIP]
+The standard library contains the following syntax extensions:
 
-** Standard Library of Monadic Syntax Extensions
+| Name/Label   | Other Labels            | Error | Since |
+|--------------+-------------------------+-------+-------|
+| =option=       | =opt=                     |   yes |       |
+| =result.ok=    | =res.ok=, =res=, =result=, =ok= |   yes |  4.08 |
+| =result.error= | =err=, =error=              |    no |  4.08 |
+| =list=         | =lst=                     |    no |       |
+| =sequence=     | =seq=                     |    no |  4.07 |
+| =either.right= | =either=, =right=           |   yes |  4.12 |
+| =either.left=  | =left=                    |    no |  4.12 |
 
-*** Option
+The second column indicate alternative labels that one can use to trigger the
+PPX. for instance, =let%result.ok=, =let%res= and =let%ok= all trigger the same
+extension. The third column indicate whether the extension covers an error part
+of the monad. This error part gives access to error-related structures such as
+=assert= and =try=. For instance, one can right =try%opt f () with () -> Some 7= which
+will return =Some x= if =f= returns =Some x= and =Some 7= if =f= returns =None=. On the
+other hand, =try%list= does not exist.
 
-*** Result
+In the case of =Result=, the same module gives birth to two monads and therefore
+two extensions: =result.ok= and =result.error=. The former is what you expect:
+=let%result.ok= (=let%ok= or =let%res= for short) binds on value of the form =Ok x=,
+propagating values of the form =Error y=. It features an error part and =try%res f
+() with Foo -> Ok 7 | Bar -> Error "no bar"= returns =Ok x= if =f= returns =Ok x=, =Ok 7=
+if =f= returns =Error Foo= and =Error "no bar"= if =f= returns =Error Bar=. The latter is
+the counterpart which binds on values of the form =Error y=, propagating values of
+the form =Ok x=. It does not feature an error part. The same considerations hold
+for =Either= which the convention that values of the form =Right x= are the “good”
+ones, even if OCaml's standard library specifies that one should only use =Either=
+“without assigning a specific meaning to what each case should be.”
 
-*** Either
+** Defining Custom Monadic Syntaxes
 
-*** List
+Defining a new monadic syntax consists in writing a rewriting library calling
+the following endpoint at top-level:
 
-*** Sequence
+#+BEGIN_SRC ocaml
+val register :
+  ?mk_return:(loc:Location.t -> expression -> expression) ->
+  ?mk_bind:  (loc:Location.t -> expression -> expression -> expression) ->
+  ?mk_fail:  (loc:Location.t -> expression -> expression) ->
+  ?mk_catch: (loc:Location.t -> expression -> expression -> expression) ->
+  ?applies_on:string ->
+  string ->
+  unit
+#+END_SRC
 
-** Defining One's Own Monadic Syntax Extension
+The functions =mk_return=, =mk_bind=, =mk_fail= and =mk_catch= are here to build the
+corresponding monadic expressions. =mk_bind=, for instance, takes two OCaml
+expressions representing the two usual arguments to a =bind= function and builds
+an expression representing the application of such a =bind= function to the
+arguments. For instance, one could define it as:
+
+#+BEGIN_SRC ocaml
+let mk_bind ~loc e f = [%expr bind [%e e] [%e f]]
+#+END_SRC
+
+The syntax extensions =[%expr ...]= and =[%e ...]= are helpers provided by ppxlib to
+manipulate OCaml expression. =[%expr ...]= allows to write OCaml code and to get
+an OCaml syntax tree out of it. This OCaml code can contain holes which =[%e ...]=
+allows to fill with a syntax tree. /For more information about this, check out
+[[https://ppxlib.readthedocs.io/en/latest/ppx-for-plugin-authors.html#metaquot][the documentation of ppxlib's Metaquot]]./
+
+The functions =mk_return=, =mk_bind=, =mk_fail= and =mk_catch= are all optional but
+providing more of them allows =ppx_monad= to provide more syntactic structures.
+For instance, =mk_bind= will suffice for =ppx_monad= to provide a simple =let ... in=,
+but =mk_return= is necessary for =let ... and ... in=. As another example, most
+structures can be defined using only =mk_return= and =mk_bind=, but =mk_fail= and
+=mk_catch= are necessary to define =assert=, =try= or =match= with exception patterns.
+
+The last two arguments of =register= are the name of the PPX. By default, this is
+also the labels on which the PPX applies: a PPX of name =result= will apply on
+=let%result=, =match%result=, etc. Additionally, one can provide =applies_on=, another
+string describing on which labels the PPX applies. This string can contain
+simple regular expressions using grouping with =(...)=, optional parts with =?= and
+choices with =|=. For instance, =ok|res(ult)?(.ok)?= matches exactly all of the
+following: =ok=, =res=, =result=, =res.ok=, =result.ok=.
+
+*** Redefining =ppx_monad_result=
+
+Let us now re-implement the PPX for =Result=, available through =ppx_monad.result=
+or =ppx_monad.std=. We can do this with the following file, of only 21 lines:
+
+#+BEGIN_SRC ocaml
+open Ppxlib
+
+let mk_return ~loc x =
+  [%expr Result.ok [%e x]]
+
+let mk_bind ~loc e f =
+  [%expr Result.bind [%e e] [%e f]]
+
+let mk_fail ~loc y =
+  [%expr Result.error [%e y]]
+
+let mk_catch ~loc e f =
+  [%expr (fun e f -> match e with
+           | Ok x -> Ok x
+           | Error y -> f y) [%e e] [%e f]]
+
+let () =
+  Ppx_monad.register "result"
+    ~applies_on:"ok|res(ult)?(.ok)?"
+    ~mk_return ~mk_bind
+    ~mk_fail ~mk_catch
+#+END_SRC
+
+It is then only a matter of building this file as a library that depends on
+=ppx_monad= and gets pre-processed by ppxlib's Metaquot. For instance, with Dune,
+assuming that our library is called =ppx_result=:
+
+#+BEGIN_SRC dune
+(library
+ (name ppx_result)
+ (public_name ppx_result)
+ (libraries ppx_monad)
+ (preprocess (pps ppxlib.metaquot))
+ (kind ppx_rewriter))
+#+END_SRC
+
+You can have a look at how =ppx_monad.result= [[./src/std/result][is defined in this repository]].
+
+*** Sanitising Variable Names
+
+For most of the functions in the example above (=mk_return=, =mk_bind= and =mk_fail=),
+there exists an implementation in the =Result= module which we can use directly.
+This is however not the case for =mk_catch= and we had to implement it by hand.
+The way we wrote it might feel weird and we might be tempted to write it as
+either of the following:
+
+#+BEGIN_SRC ocaml
+let incorrect_mk_catch ~loc e f =
+  [%expr let catch e f = match e with
+           | Ok x -> Ok x
+           | Error y -> f y
+         in catch [%e e] [%e f]
+
+let incorrect_mk_catch ~loc e f =
+  [%expr match [%e e] with
+         | Ok x -> Ok x
+         | Error y -> [%e f] y]
+#+END_SRC
+
+These implementations, however, are incorrect, because they bind variables in
+the scope of =e= and =f=. For instance, in the first implementation, if =e= or =f= were
+to contain the free variable =catch=, it would . The same issue is present in the
+second implementation if =f= were to contain the free variable =y=. If one wants to
+go down this road, the proper way is to ensure that the variable names are
+unique. Luckily, =ppx_monad= includes a mechanism for this. A proper way to write
+the above functions would be the following:
+
+#+BEGIN_SRC ocaml
+let mk_catch ~loc e f =
+  let (pcatch, catch) = Ppx_monad.fresh_variable () in
+  [%expr let [%p pcatch] e f = match e with
+           | Ok x -> Ok x
+           | Error y -> f y
+         in [%e catch] [%e e] [%e f]]
+
+let mk_catch ~loc e f =
+  let (py, y) = Ppx_monad.fresh_variable () in
+  [%expr match [%e e] with
+         | Ok x -> Ok x
+         | Error [%p py] -> [%e f] [%e y]]
+#+END_SRC
+
+=[%p ...]= is similar to =[%e ...]= for wholes in pattern positions.
+=Ppx_monad.fresh_variable= returns a pair of a pattern and an expression, the
+former binding a unique variable name which the latter mentions.
 
 ** Related Works
 
