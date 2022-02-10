@@ -2,6 +2,7 @@
  (name ppx_monad_std)
  (public_name ppx_monad.std)
  (libraries
+   ppx_monad_do
    ppx_monad_list
    ppx_monad_seq
    ppx_monad_option
