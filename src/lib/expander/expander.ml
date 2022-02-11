@@ -3,9 +3,9 @@ open Ppxlib
 let mk
     ?mk_return ?mk_bind ?mk_fail ?mk_catch ()
   =
-  fun ~ctxt payload ->
+  fun ~ctxt expression ->
     let loc = Expansion_context.Extension.extension_point_loc ctxt in
-    match payload.pexp_desc with
+    match expression.pexp_desc with
     | Pexp_assert e ->                    AssertExpander.mk ?mk_return ?mk_bind ?mk_fail ?mk_catch ~loc e
     | Pexp_for (i, start, stop, dir, e) ->   ForExpander.mk ?mk_return ?mk_bind ?mk_fail ?mk_catch ~loc i start stop dir e
     | Pexp_ifthenelse (e1, e2, e3) -> IfthenelseExpander.mk ?mk_return ?mk_bind ?mk_fail ?mk_catch ~loc e1 e2 e3
