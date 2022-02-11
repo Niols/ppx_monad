@@ -11,6 +11,8 @@ let rec expression_to_pattern ~loc expression =
 
 let expander ~bind ~loc =
   let rec expander = function
+    | [%expr [%e? {pexp_desc=Pexp_setinstvar (x, e);_}]; [%e? next]] -> (* x <- e; next *)
+      [%expr [%e bind] [%e e] (fun [%p Pat.var x] -> [%e expander next])]
     | [%expr [%e? x] <-- [%e? e]; [%e? next]] ->
       let x = expression_to_pattern x ~loc in
       [%expr [%e bind] [%e e] (fun [%p x] -> [%e expander next])]

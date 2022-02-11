@@ -137,8 +137,8 @@ that implements a Haskell-like =do=-notation. For instance, the following code:
 #+BEGIN_SRC ocaml
 let add_string_ints (s1 : string) (s2 : string) : string option =
   begin%do [@monad Option]
-    n1 <-- int_of_string_opt s1;
-    n2 <-- int_of_string_opt s2;
+    n1 <- int_of_string_opt s1;
+    n2 <- int_of_string_opt s2;
     Some (string_of_int (n1 + n2))
   end
 #+END_SRC
@@ -152,12 +152,13 @@ let add_string_ints (s1 : string) (s2 : string) : string option =
   Some (string_of_int (n1 + n2))
 #+END_SRC
 
-This notation supports some basic patterns on the left-hand side of =<--=
-(wildcards, tuples) with the peculiarity that the wildcard =_= has to be written
-=__=, without which the compiler will complain with =Syntax error: wildcard "_" not
-expected=. It is also possible to use a “sequence” when no value should be bound.
-If one needed to use an actual operator =<--= or a usual OCaml sequence, they
-should wrap those inside a =let () = ... in=.
+This notation supports the use of a sequence when no value should be bound. It
+does not, however, support patterns on the left-hand side of =<-= but one can
+recover this functionality with =<--= which supports basic patterns with the
+peculiarity that the wildcard =_= has to be written =__=, without which the compiler
+will complain with =Syntax error: wildcard "_" not expected=. If one needed to use
+an actual operator =<-= or =<--= or a usual OCaml sequence, they should wrap those
+inside a =let () = ... in=.
 
 Finally, this notation supports two optional attributes, =@bind= and =@monad=. =@bind=
 allows to provide a custom =bind= function; =@monad= allows to specify a module in
