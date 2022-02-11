@@ -1,20 +1,21 @@
 open Ppxlib
 open Ast_helper
 
-let rec expression_to_pattern ~loc expression =
+let rec expression_to_pattern expression =
+  let loc = expression.pexp_loc in
   match expression.pexp_desc with
   | Pexp_ident {txt=Lident "__"; _} -> Pat.any ~loc ()
   | Pexp_ident {txt=Lident id; _} -> Pat.var ~loc {txt=id; loc}
-  | Pexp_tuple expressions -> Pat.tuple (List.map (expression_to_pattern ~loc) expressions)
+  | Pexp_tuple expressions -> Pat.tuple (List.map expression_to_pattern expressions)
   (* FIXME: record (including _) *)
-  | _ -> assert false
+  | _ -> Location.raise_errorf ~loc "unsupported pattern in do notation"
 
 let expander ~bind ~loc =
   let rec expander = function
     | [%expr [%e? {pexp_desc=Pexp_setinstvar (x, e);_}]; [%e? next]] -> (* x <- e; next *)
       [%expr [%e bind] [%e e] (fun [%p Pat.var x] -> [%e expander next])]
     | [%expr [%e? x] <-- [%e? e]; [%e? next]] ->
-      let x = expression_to_pattern x ~loc in
+      let x = expression_to_pattern x in
       [%expr [%e bind] [%e e] (fun [%p x] -> [%e expander next])]
     | [%expr [%e? e]; [%e? next]] ->
       [%expr [%e bind] [%e e] (fun () -> [%e expander next])]
