@@ -39,7 +39,7 @@ let mk_with_exception
     List.map
       (fun case ->
          match case with
-         | { pc_lhs = { ppat_desc = Ppat_exception pc_lhs; _ }; _ } ->
+         | { pc_lhs = [%pat? exception [%p? pc_lhs]]; _ } ->
            { case with pc_lhs }
          | _ -> assert false)
       exception_cases
