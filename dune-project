@@ -1,8 +1,8 @@
-(lang dune 2.5)
+(lang dune 2.7)
 
 (generate_opam_files true)
 
-(version 0.1)
+(version 0.1.0)
 
 (license LGPL-3.0-or-later)
 (authors "Niols <niols@niols.fr>")
@@ -14,4 +14,4 @@
 (package
  (name ppx_monad)
  (synopsis "A Syntax Extension for all Monadic Syntaxes")
- (depends ppxlib))
+ (depends (ppxlib (>= 0.9.0))))

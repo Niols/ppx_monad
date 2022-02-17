@@ -15,5 +15,3 @@ test:
 
 clean:
 	dune clean
-	rm -f test/nop/dune
-	rm *.opam
