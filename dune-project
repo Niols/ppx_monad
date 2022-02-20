@@ -2,7 +2,7 @@
 
 (generate_opam_files true)
 
-(version 0.1.0)
+(version 0.2.0)
 
 (license LGPL-3.0-or-later)
 (authors "Niols <niols@niols.fr>")
