@@ -1,6 +1,7 @@
 open Ppxlib
+open Helpers
 
-let fresh_variable = Helpers.fresh_variable
+let fresh_variable = fresh_variable
 
 let register
     (* Module containing monadic functions *)
@@ -11,6 +12,9 @@ let register
     (* Name and where it applies *)
     ?applies_on name
   =
+  (* parse `monad` and `monad_error` as long idents *)
+  let monad = Longident.parse <$> monad in
+  let monad_error = Longident.parse <$> monad_error in
   (* compute the expander *)
   let expander =
     Expander.mk
