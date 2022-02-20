@@ -1,0 +1,3 @@
+(library
+ (name ppx_monad_std)
+ (public_name ppx_monad.std))
