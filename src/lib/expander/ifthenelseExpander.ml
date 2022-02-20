@@ -3,17 +3,19 @@ open Ast_helper
 open Helpers
 
 let mk
-    ?monad
+    ?monad ?monad_error
     ?mk_return ?mk_bind ?mk_fail ?mk_catch
     ~loc e1 e2 e3
   =
   let mk_return = first [
       mk_return;
+      Common.mk_fail_of_monad <$> monad_error;
       Common.mk_return_of_monad <$> monad;
     ]
   in
   let mk_bind = first_or_does_not_support "if-then-else" [
       mk_bind;
+      Common.mk_catch_of_monad <$> monad_error;
       Common.mk_bind_of_monad <$> monad;
     ]
   in

@@ -4,7 +4,7 @@ let fresh_variable = Helpers.fresh_variable
 
 let register
     (* Module containing monadic functions *)
-    ?monad
+    ?monad ?monad_error
     (* Monadic functions *)
     ?mk_return ?mk_bind
     ?mk_fail ?mk_catch
@@ -12,7 +12,12 @@ let register
     ?applies_on name
   =
   (* compute the expander *)
-  let expander = Expander.mk ?monad ?mk_return ?mk_bind ?mk_fail ?mk_catch () in
+  let expander =
+    Expander.mk
+      ?monad ?monad_error
+      ?mk_return ?mk_bind ?mk_fail ?mk_catch
+      ()
+  in
   (* compute the labels to which this extension should apply *)
   let labels =
     (match applies_on with

@@ -1,23 +1,25 @@
 open Ppxlib
 open Helpers
-open Common
 
 let mk
-    ?monad
+    ?monad ?monad_error
     ?mk_return ?mk_bind ?mk_fail ?mk_catch
     ~loc i start stop dir e
   =
   let mk_return = first_or_does_not_support "for" [
       mk_return;
-      mk_return_of_monad <$> monad;
+      Common.mk_fail_of_monad <$> monad_error;
+      Common.mk_return_of_monad <$> monad;
     ]
   in
   let mk_bind = first_or_does_not_support "for" [
       mk_bind;
-      mk_bind_of_monad <$> monad;
+      Common.mk_catch_of_monad <$> monad_error;
+      Common.mk_bind_of_monad <$> monad;
     ]
   in
-  ignore mk_fail; ignore mk_catch;
+  ignore mk_fail;
+  ignore mk_catch;
   let pfor, for_  = fresh_variable () in
   let pj,  j  = fresh_variable () in
   let pj0, j0 = fresh_variable () in

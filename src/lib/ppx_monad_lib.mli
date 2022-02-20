@@ -2,6 +2,7 @@ open Ppxlib
 
 val register :
   ?monad:Longident.t ->
+  ?monad_error:Longident.t ->
   ?mk_return:(loc:location -> expression -> expression) ->
   ?mk_bind:(loc:location -> expression -> expression -> expression) ->
   ?mk_fail:(loc:location -> expression -> expression) ->
