@@ -1,3 +1,7 @@
+type ('a, 'b) t = ('a, 'b) Stdlib.Result.t =
+  | Ok of 'a
+  | Error of 'b
+
 let return x = Ok x
 
 let bind e f = match e with
