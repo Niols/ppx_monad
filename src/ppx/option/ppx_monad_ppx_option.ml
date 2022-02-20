@@ -15,7 +15,7 @@ let mk_catch ~loc e f =
        | Stdlib.Option.Some x -> Stdlib.Option.Some x
        | Stdlib.Option.None -> f ()) [%e e] [%e f]]
 
-let () = Ppx_monad.register "option"
+let () = Ppx_monad_lib.register "option"
     ~applies_on:"opt(ion)?"
     ~mk_return ~mk_bind
     ~mk_fail ~mk_catch

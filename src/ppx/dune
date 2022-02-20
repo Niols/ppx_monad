@@ -1,0 +1,12 @@
+(library
+ (name ppx_monad_ppx)
+ (public_name ppx_monad.ppx)
+ (libraries
+   ppx_monad.ppx.do
+   ppx_monad.ppx.list
+   ppx_monad.ppx.seq
+   ppx_monad.ppx.option
+   ppx_monad.ppx.result
+   ppx_monad.ppx.either
+   ppx_monad.ppx.monad)
+ (kind ppx_rewriter))

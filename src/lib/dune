@@ -3,8 +3,8 @@
 (ocamllex simpleRegexp)
 
 (library
- (name ppx_monad)
- (public_name ppx_monad)
+ (name ppx_monad_lib)
+ (public_name ppx_monad.lib)
  (libraries ppxlib str)
  (preprocess (pps ppxlib.metaquot))
  (kind ppx_rewriter))

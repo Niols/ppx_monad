@@ -1,6 +1,0 @@
-(library
- (name ppx_monad_either)
- (public_name ppx_monad.either)
- (libraries ppx_monad)
- (preprocess (pps ppxlib.metaquot))
- (kind ppx_rewriter))
