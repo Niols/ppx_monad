@@ -1,5 +1,6 @@
 open Ppxlib
 open Ast_helper
+open Helpers
 
 let mk_simple ~mk_bind ~loc e cases =
   mk_bind ~loc e (Exp.function_ cases)
@@ -8,13 +9,9 @@ let mk_with_exception
     ?mk_return ~mk_bind ?mk_fail ?mk_catch
     ~loc e cases exception_cases
   =
-  let mk_return, mk_catch =
-    match mk_return, mk_catch with
-    | Some mk_return, Some mk_catch ->
-      mk_return, mk_catch
-    | _ -> Helpers.does_not_support "match with exceptions"
-  in
-  let (pv, v) = Helpers.fresh_variable () in
+  let mk_return = unwrap_or_does_not_support "match with exceptions" mk_return in
+  let mk_catch  = unwrap_or_does_not_support "match with exceptions" mk_catch in
+  let (pv, v) = fresh_variable () in
   (* wrap e in code that classify it between Normal and Exception *)
   let e =
     mk_catch ~loc
@@ -41,7 +38,7 @@ let mk_with_exception
       exception_cases
   in
   let exception_cases =
-    Helpers.add_catchall_if_needed
+    add_catchall_if_needed
       ~loc ?mk_return:mk_fail exception_cases
   in
   let exception_cases =
@@ -52,11 +49,26 @@ let mk_with_exception
   mk_simple ~mk_bind ~loc e (cases @ exception_cases)
 
 let mk
+    ?monad
     ?mk_return ?mk_bind ?mk_fail ?mk_catch
     ~loc e cases
   =
+  let mk_return = first [
+      mk_return;
+      Common.mk_return_of_monad <$> monad;
+    ]
+  in
+  let mk_bind = first_or_does_not_support "match" [
+      mk_bind;
+      Common.mk_bind_of_monad <$> monad;
+    ]
+  in
   ignore mk_fail;
-  let mk_bind = Helpers.unwrap_or_does_not_support mk_bind "match" in
+  let mk_catch = first [
+      mk_catch;
+      Common.mk_catch_of_monad <$> monad;
+    ]
+  in
   (* split the match's cases between normal and exceptional ones *)
   let (cases, exception_cases) =
     List.partition
