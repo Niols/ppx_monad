@@ -6,14 +6,12 @@ let mk
     ~loc e1 e2 e3
   =
   ignore mk_fail; ignore mk_catch;
-  let mk_bind = Helpers.unwrap_or_does_not_support mk_bind
-      "if-then-else" ~requires:"mk_bind"
-  in
+  let mk_bind = Helpers.unwrap_or_does_not_support mk_bind "if-then-else" in
   match e3 with
   | None ->
     (
       let mk_return = Helpers.unwrap_or_does_not_support mk_return
-          "if-then with no else" ~requires:"mk_return+mk_bind"
+          "if-then with no else"
       in
       (* e1 >>= function true -> e2 | false -> return () *)
       mk_bind ~loc e1 Exp.(function_ [

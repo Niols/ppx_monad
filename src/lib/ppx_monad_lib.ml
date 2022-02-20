@@ -1,7 +1,5 @@
 open Ppxlib
 
-module MatchExpander = MatchExpander
-
 let fresh_variable = Helpers.fresh_variable
 
 let register

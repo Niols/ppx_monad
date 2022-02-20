@@ -10,29 +10,24 @@ let fresh_variable =
     Pat.var { txt = str; loc },
     Exp.ident { txt = Longident.Lident str; loc }
 
-let does_not_support ?(ppx_name="This PPX") ?requires construct =
-  Location.raise_errorf "%s does not support %s%a"
+let does_not_support ?(ppx_name="This PPX") construct =
+  Location.raise_errorf "%s does not support %s"
     ppx_name construct
-    (fun fmt -> function
-       | None -> ()
-       | Some requires ->
-         Format.fprintf fmt "\n(requires %s)" requires)
-    requires
 
-let unwrap_or_does_not_support x ?ppx_name ?requires construct =
+let unwrap_or_does_not_support x ?ppx_name construct =
   match x with
   | Some x -> x
-  | _ -> does_not_support ?ppx_name ?requires construct
+  | _ -> does_not_support ?ppx_name construct
 
-let unwrap2_or_does_not_support xs ?ppx_name ?requires construct =
+let unwrap2_or_does_not_support xs ?ppx_name construct =
   match xs with
   | Some x1, Some x2 -> x1, x2
-  | _ -> does_not_support ?ppx_name ?requires construct
+  | _ -> does_not_support ?ppx_name construct
 
-let unwrap3_or_does_not_support xs ?ppx_name ?requires construct =
+let unwrap3_or_does_not_support xs ?ppx_name construct =
   match xs with
   | Some x1, Some x2, Some x3 -> x1, x2, x3
-  | _ -> does_not_support ?ppx_name ?requires construct
+  | _ -> does_not_support ?ppx_name construct
 
 let add_catchall_if_needed ~loc ?mk_return cases =
   let is_catchall case =

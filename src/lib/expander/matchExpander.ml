@@ -12,7 +12,7 @@ let mk_with_exception
     match mk_return, mk_catch with
     | Some mk_return, Some mk_catch ->
       mk_return, mk_catch
-    | _ -> Helpers.does_not_support "match with exceptions" ~requires:"mk_return+mk_fail+mk_catch"
+    | _ -> Helpers.does_not_support "match with exceptions"
   in
   let (pv, v) = Helpers.fresh_variable () in
   (* wrap e in code that classify it between Normal and Exception *)
@@ -56,9 +56,7 @@ let mk
     ~loc e cases
   =
   ignore mk_fail;
-  let mk_bind = Helpers.unwrap_or_does_not_support mk_bind
-      "match" ~requires:"mk_return+mk_bind"
-  in
+  let mk_bind = Helpers.unwrap_or_does_not_support mk_bind "match" in
   (* split the match's cases between normal and exceptional ones *)
   let (cases, exception_cases) =
     List.partition

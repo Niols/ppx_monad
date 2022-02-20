@@ -6,8 +6,7 @@ let mk
   =
   ignore mk_fail; ignore mk_catch;
   let (mk_return, mk_bind) =
-    Helpers.unwrap2_or_does_not_support (mk_return, mk_bind)
-      "for" ~requires:"mk_return+mk_bind"
+    Helpers.unwrap2_or_does_not_support (mk_return, mk_bind) "for"
   in
   let pfor, for_  = Helpers.fresh_variable () in
   let pj,  j  = Helpers.fresh_variable () in

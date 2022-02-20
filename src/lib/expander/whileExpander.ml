@@ -7,8 +7,7 @@ let mk
   =
   ignore mk_fail; ignore mk_catch;
   let (mk_return, mk_bind) =
-    Helpers.unwrap2_or_does_not_support (mk_return, mk_bind)
-      "while" ~requires:"mk_return+mk_bind"
+    Helpers.unwrap2_or_does_not_support (mk_return, mk_bind) "while"
   in
   (* while% e1 do e2 done
      =>

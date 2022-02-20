@@ -7,8 +7,7 @@ let mk
   =
   ignore mk_catch;
   let (mk_return, mk_bind, mk_fail) =
-    Helpers.unwrap3_or_does_not_support (mk_return, mk_bind, mk_fail)
-      "assert" ~requires:"mk_return+mk_bind+mk_fail"
+    Helpers.unwrap3_or_does_not_support (mk_return, mk_bind, mk_fail) "assert"
   in
   (* assert% false   =>   try assert false with exn -> fail exn *)
   (* assert% e       =>   e >>= function

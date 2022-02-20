@@ -6,15 +6,13 @@ let mk
     ~loc rec_flag vbs e
   =
   ignore mk_fail; ignore mk_catch;
-  let mk_bind = Helpers.unwrap_or_does_not_support mk_bind
-      "let" ~requires:"mk_bind"
-  in
+  let mk_bind = Helpers.unwrap_or_does_not_support mk_bind "let" in
   let mk_and ~loc e1 e2 =
     (* e1 >>= fun v1 ->
        e2 >>= fun v2 ->
        return (v1, v2) *)
     match mk_return with
-    | None -> Helpers.does_not_support "and" ~requires:"mk_return+mk_bind"
+    | None -> Helpers.does_not_support "and"
     | Some mk_return ->
       let (pv1, v1) = Helpers.fresh_variable () in
       let (pv2, v2) = Helpers.fresh_variable () in
