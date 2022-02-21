@@ -15,7 +15,11 @@ let rec first = function
   | None :: rest -> first rest
   | Some res :: _ -> Some res
 
-let (<$>) = Option.map
+let option_map f = function
+  | None -> None
+  | Some x -> Some (f x)
+
+let (<$>) = option_map
 
 let does_not_support ?(ppx_name="This PPX") feature =
   Location.raise_errorf "%s does not support %s"

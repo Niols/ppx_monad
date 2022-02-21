@@ -14,4 +14,6 @@
 (package
  (name ppx_monad)
  (synopsis "A Syntax Extension for all Monadic Syntaxes")
- (depends (ppxlib (>= 0.9.0))))
+ (depends
+   dune-configurator
+  (ppxlib (>= 0.9.0))))

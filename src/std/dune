@@ -1,3 +1,14 @@
+(executable
+ (name ppx_monad_std_gen)
+ (libraries dune-configurator)
+ (modules ppx_monad_std_gen))
+
+(rule
+ (with-stdout-to
+   ppx_monad_std.ml
+  (run ./ppx_monad_std_gen.exe)))
+
 (library
  (name ppx_monad_std)
- (public_name ppx_monad.std))
+ (public_name ppx_monad.std)
+ (modules ppx_monad_std))
