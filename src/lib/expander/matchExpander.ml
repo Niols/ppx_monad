@@ -17,16 +17,16 @@ let mk_with_exception
     mk_catch ~loc
       (mk_bind ~loc e
          [%expr fun [%p pv] ->
-           [%e mk_return ~loc [%expr Ppx_monad_std.Result.Ok [%e v]]]])
+           [%e mk_return ~loc [%expr Result.Ok [%e v]]]])
       [%expr fun [%p pv] ->
-        [%e mk_return ~loc [%expr Ppx_monad_std.Result.Error [%e v]]]]
+        [%e mk_return ~loc [%expr Result.Error [%e v]]]]
   in
   (* wrap all the cases so that they match on Normal or Exception. for
      exceptions, we first unwrap them from the 'exception' keyword, then add a
      catchall if needed and only then wrap them in the Ppx_monad.*.Exception. *)
   let cases =
     cases |> List.map @@ fun case ->
-    { case with pc_lhs = [%pat? Ppx_monad_std.Result.Ok [%p case.pc_lhs]] }
+    { case with pc_lhs = [%pat? Result.Ok [%p case.pc_lhs]] }
   in
   let exception_cases =
     List.map
@@ -43,7 +43,7 @@ let mk_with_exception
   in
   let exception_cases =
     exception_cases |> List.map @@ fun case ->
-    { case with pc_lhs = [%pat? Ppx_monad_std.Result.Error [%p case.pc_lhs]] }
+    { case with pc_lhs = [%pat? Result.Error [%p case.pc_lhs]] }
   in
   (* return a match on all this *)
   mk_simple ~mk_bind ~loc e (cases @ exception_cases)
