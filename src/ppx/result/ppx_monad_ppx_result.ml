@@ -4,12 +4,7 @@ let mk_return ~loc x =
   [%expr Stdlib.Result.Ok [%e x]]
 
 let mk_bind ~loc e f =
-  let (px, x) = Ppx_monad_lib.fresh_variable () in
-  let (py, y) = Ppx_monad_lib.fresh_variable () in
-  [%expr
-    match [%e e] with
-    | Stdlib.Result.Ok [%p px] -> [%e f] [%e x]
-    | Stdlib.Result.Error [%p py] -> Stdlib.Result.Error [%e y]]
+  [%expr Stdlib.Result.bind [%e e] [%e f]]
 
 let mk_fail ~loc y =
   [%expr Stdlib.Result.Error [%e y]]
