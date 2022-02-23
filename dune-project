@@ -15,5 +15,6 @@
  (name ppx_monad)
  (synopsis "A Syntax Extension for all Monadic Syntaxes")
  (depends
+  (ocaml (>= 4.08.0))
    dune-configurator
   (ppxlib (>= 0.9.0))))
