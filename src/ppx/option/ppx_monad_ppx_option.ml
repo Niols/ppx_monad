@@ -1,24 +1,24 @@
 open Ppxlib
 
 let mk_return ~loc x =
-  [%expr Some [%e x]]
+  [%expr Stdlib.Option.Some [%e x]]
 
 let mk_bind ~loc e f =
   let (px, x) = Ppx_monad_lib.fresh_variable () in
   [%expr
     match [%e e] with
-    | Some [%p px] -> [%e f] [%e x]
-    | None -> None]
+    | Stdlib.Option.Some [%p px] -> [%e f] [%e x]
+    | Stdlib.Option.None -> Stdlib.Option.None]
 
 let mk_fail ~loc e =
-  [%expr let () = [%e e] in None]
+  [%expr let () = [%e e] in Stdlib.Option.None]
 
 let mk_catch ~loc e f =
   let (px, x) = Ppx_monad_lib.fresh_variable () in
   [%expr
     match [%e e] with
-    | Some [%p px] -> Some [%e x]
-    | None -> [%e f] ()]
+    | Stdlib.Option.Some [%p px] -> Stdlib.Option.Some [%e x]
+    | Stdlib.Option.None -> [%e f] ()]
 
 let () = Ppx_monad_lib.register "option"
     ~applies_on:"opt(ion)?"
